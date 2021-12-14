@@ -145,6 +145,23 @@ describe('Xcode L0 Suite', function () {
         done();
     });
 
+
+    it('run Xcode build, signing with multiple provisioning profiles', function (done: MochaDone) {
+        this.timeout(parseInt(process.env.TASK_TEST_TIMEOUT) || 20000);
+
+        let tp = path.join(__dirname, 'L0SigningWithMultipleProfilesFromProject.js');
+        let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
+
+        tr.run();
+
+        assert(tr.ran('/home/bin/xcodebuild -version'), 'xcodebuild for version should have been run.');
+        assert(tr.ran('/home/bin/xcodebuild -sdk $(SDK) -configuration $(Configuration) -workspace /user/build/fun.xcodeproj/project.xcworkspace -scheme fun build CODE_SIGN_STYLE=Manual'),
+          'xcodebuild for building the ios project/workspace should have been run with signing options without any provisioning profiles.');
+        assert(tr.stderr.length == 0, 'should not have written to stderr');
+        assert(tr.succeeded, 'task should have succeeded');
+        done();
+    });
+
     it('run Xcode with required arg is not specified', function (done: MochaDone) {
         this.timeout(parseInt(process.env.TASK_TEST_TIMEOUT) || 20000);
 

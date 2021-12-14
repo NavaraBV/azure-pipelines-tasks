@@ -215,13 +215,18 @@ async function run() {
                 provProfileName = "";
             }
 
-            // PROVISIONING_PROFILE_SPECIFIER takes predence over PROVISIONING_PROFILE,
-            // so it's important to pass it to Xcode even if it's empty. That way Xcode
-            // will ignore any specifier in the project file and honor the specifier
-            // or uuid we passed on the commandline. If the user wants to use the specifier
-            // in the project file, they should choose the "Project Defaults" signing style.
-            xcode_provProfile = `PROVISIONING_PROFILE=${provProfileUUID}`;
-            xcode_provProfileSpecifier = `PROVISIONING_PROFILE_SPECIFIER=${provProfileName}`;
+            const useProvisioningProfilesFromProject: string = tl.getInput('useProvisioningProfilesFromProject', false);
+
+            if(!useProvisioningProfilesFromProject) {
+                // PROVISIONING_PROFILE_SPECIFIER takes predence over PROVISIONING_PROFILE,
+                // so it's important to pass it to Xcode even if it's empty. That way Xcode
+                // will ignore any specifier in the project file and honor the specifier
+                // or uuid we passed on the commandline. If the user wants to use the specifier
+                // in the project file, they should choose the "Project Defaults" signing style.
+                xcode_provProfile = `PROVISIONING_PROFILE=${provProfileUUID}`;
+                xcode_provProfileSpecifier = `PROVISIONING_PROFILE_SPECIFIER=${provProfileName}`;
+            }
+
         }
         else if (signingOption === 'auto') {
             xcode_codeSignStyle = 'CODE_SIGN_STYLE=Automatic';
